@@ -100,10 +100,18 @@ int main()
 										 0xb2,0xeb,0x05,0xe2,0xc3,0x9b,0xe9,0xfc,
 										 0xda,0x6c,0x19,0x07,0x8c,0x6a,0x9d,0x1b};
 
-	AES_encrypt_cbc(AES_TEST_VECTOR, AES128_TEST_KEY, CBC_IV, 64);
-	printf("The TEXT:\n");
+	printf("The PLAIN TEXT:\n");
 	int i;
 		for (i=0; i< 64/16; i++)
 				print_m128i_with_string("",((__m128i*)AES_TEST_VECTOR)[i]);
+	AES_encrypt_cbc(AES_TEST_VECTOR, AES128_TEST_KEY, CBC_IV, 64);
+	
+	printf("The CIPHER TEXT:\n");
+		for (i=0; i< 64/16; i++)
+				print_m128i_with_string("",((__m128i*)AES_TEST_VECTOR)[i]);
+	
+	printf("The EXPECTED TEXT:\n");
+		for (i=0; i< 64/16; i++)
+				print_m128i_with_string("",((__m128i*)CBC128_EXPECTED)[i]);
 	return 0;
 }
