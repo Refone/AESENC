@@ -78,7 +78,7 @@ void AES_CBC_decrypt(const unsigned char *in, unsigned char *out, unsigned char 
 					 unsigned long length, const unsigned char *KS, int nr);
 int AES_set_encrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
 int AES_set_decrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
-int Check_CPU_support_AES();
+//int Check_CPU_support_AES();
 /*****************************************************************************/
 void print_m128i_with_string(char* string,__m128i data)
 {
@@ -109,11 +109,11 @@ int main(){
 		uint8_t *CIPHER_KEY;
 		int i,j;
 		int key_length;
-		if (!Check_CPU_support_AES()){
-				printf("Cpu does not support AES instruction set. Bailing out.\n");
-				return 1;
-		}
-		printf("CPU support AES instruction set.\n\n");
+//		if (!Check_CPU_support_AES()){
+//				printf("Cpu does not support AES instruction set. Bailing out.\n");
+//				return 1;
+//		}
+//		printf("CPU support AES instruction set.\n\n");
 #ifdef AES128
 #define STR "Performing AES128 CBC.\n"
 		CIPHER_KEY = AES128_TEST_KEY;
@@ -169,6 +169,9 @@ int main(){
 		printf("The Key Schedule:\n");
 		for (i=0; i< key.nr; i++)
 				print_m128i_with_string("",((__m128i*)key.KEY)[i]);
+		printf("The Decrypt Key Schedule:\n");
+		for (i=0; i< decrypt_key.nr; i++)
+				print_m128i_with_string("",((__m128i*)decrypt_key.KEY)[i]);
 		printf("The PLAINTEXT:\n");
 		for (i=0; i< LENGTH/16; i++)
 				print_m128i_with_string("",((__m128i*)PLAINTEXT)[i]);

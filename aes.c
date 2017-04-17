@@ -5,6 +5,8 @@
 
 #include <wmmintrin.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 //#define AES128
 //#define AES192
@@ -37,7 +39,7 @@ typedef struct KEY_SCHEDULE{
 	unsigned int nr;
 }AES_KEY;
 
-int Check_CPU_support_AES();
+//int Check_CPU_support_AES();
 
 /************************************************************************************/
 /* implement in assemble code */
@@ -107,7 +109,29 @@ int AES_set_encrypt_key (const unsigned char *userKey,
 		}
 		return -2;
 }
+/*
+int AES_set_decrypt_key (const unsigned char *userKey,
+						 const int bits,
+						 AES_KEY *key)
+{
+		int i,nr;;
+		AES_KEY temp_key;
+		ALIGN16 unsigned char *Key_Schedule = (ALIGN16 unsigned char *)key->KEY;
+		ALIGN16 unsigned char *Temp_Key_Schedule = (ALIGN16 unsigned char*)temp_key.KEY;
+		if (!userKey || !key)
+				return -1;
+		if (AES_set_encrypt_key(userKey,bits,&temp_key) == -2)
+				return -2;
 
+		printf("nr: %d\n", temp_key.nr);
+		printf("sizeof ALIGN16: %d\n", sizeof(ALIGN16 unsigned char));
+		nr = temp_key.nr;
+		key->nr = nr;
+		for (i=0; i<=nr; i++)
+			memcpy(&Key_Schedule[(nr-i)*16], &Temp_Key_Schedule[i*16], 16);
+		return 0;
+}
+*/
 int AES_set_decrypt_key (const unsigned char *userKey,
 						 const int bits,
 						 AES_KEY *key)
@@ -123,27 +147,11 @@ int AES_set_decrypt_key (const unsigned char *userKey,
 		nr = temp_key.nr;
 		key->nr = nr;
 		Key_Schedule[nr] = Temp_Key_Schedule[0];
-		Key_Schedule[nr-1] = _mm_aesimc_si128(Temp_Key_Schedule[1]);
-		Key_Schedule[nr-2] = _mm_aesimc_si128(Temp_Key_Schedule[2]);
-		Key_Schedule[nr-3] = _mm_aesimc_si128(Temp_Key_Schedule[3]);
-		Key_Schedule[nr-4] = _mm_aesimc_si128(Temp_Key_Schedule[4]);
-		Key_Schedule[nr-5] = _mm_aesimc_si128(Temp_Key_Schedule[5]);
-		Key_Schedule[nr-6] = _mm_aesimc_si128(Temp_Key_Schedule[6]);
-		Key_Schedule[nr-7] = _mm_aesimc_si128(Temp_Key_Schedule[7]);
-		Key_Schedule[nr-8] = _mm_aesimc_si128(Temp_Key_Schedule[8]);
-		Key_Schedule[nr-9] = _mm_aesimc_si128(Temp_Key_Schedule[9]);
-		if(nr>10){
-				Key_Schedule[nr-10] = _mm_aesimc_si128(Temp_Key_Schedule[10]);
-				Key_Schedule[nr-11] = _mm_aesimc_si128(Temp_Key_Schedule[11]);
-		}
-		if(nr>12){
-				Key_Schedule[nr-12] = _mm_aesimc_si128(Temp_Key_Schedule[12]);
-				Key_Schedule[nr-13] = _mm_aesimc_si128(Temp_Key_Schedule[13]);
-		}
+		for (i=1;i<nr;i++)
+			Key_Schedule[nr-i] = _mm_aesimc_si128(Temp_Key_Schedule[i]);
 		Key_Schedule[0] = Temp_Key_Schedule[nr];
 		return 0;
 }
-
 void AES_encrypt_ecb(void *paddr, unsigned char *key_addr, uint8_t length)
 {
 	AES_set_encrypt_key(key_addr, KEY_LENGTH, &key);
