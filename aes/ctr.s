@@ -43,6 +43,9 @@ AES_CTR_encrypt:
 # parameter 5: %r8
 # parameter 6: %r9
 # parameter 7: 8 + %rsp
+
+	push 	%r12
+
 	movq	%r8, %r10
 	movl	8(%rsp), %r12d
 	shrq	$4, %r8
@@ -240,4 +243,7 @@ IN_LAST_4:
 	jne		IN_LOOP_4
 
 END_4:
+
+	push 	%r12
+
 	ret

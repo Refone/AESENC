@@ -12,6 +12,7 @@ AES_CBC_encrypt:
 # parameter 4: %rcx
 # parameter 5: %r8
 # parameter 6: %r9d
+
 	movq	%rcx, %r10
 	shrq	$4, %rcx
 	shlq	$60, %r10

@@ -3,57 +3,21 @@
   * length specific key expansion functions
   */
 
-#include <wmmintrin.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-//#define AES128
-//#define AES192
-//#define AES256
-
-#ifndef AES192
-#ifndef AES258
-#define AES128
-#endif
-#endif
-
-#ifdef AES192
-#define KEY_LENGTH 192
-#elif AES258
-#define KEY_LENGTH 258
-#else 
-#define KEY_LENGTH 128
-#endif
-
-#if !defined (ALIGN16)
-# if defined (__GNUC__)
-# define ALIGN16 __attribute__((aligned(16)))
-# else
-# define ALIGN16 __declspec(align(16))
-# endif
-#endif
-
-typedef struct KEY_SCHEDULE{
-	ALIGN16 unsigned char KEY[16*15];
-	unsigned int nr;
-}AES_KEY;
-
-//int Check_CPU_support_AES();
+#include "aes.h"
 
 /************************************************************************************/
 /* implement in assemble code */
 
 /* key_expasion.s */
-int AES_set_encrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
-int AES_set_decrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
+extern int AES_set_encrypt_key(const unsigned char *userKey, 
+			       const int bits, 
+			       AES_KEY *key);
+
+extern int AES_set_decrypt_key(const unsigned char *userKey, 
+			       const int bits, 
+			       AES_KEY *key);
 
 /* ecb.s */
-void AES_ECB_encrypt(const unsigned char *in, unsigned char *out, unsigned long length,
-					 const unsigned char *KS, int nr);
-void AES_ECB_decrypt(const unsigned char *in, unsigned char *out, unsigned long length,
-					 const unsigned char *KS, int nr);
-
 /* cbc.s */
 void AES_CBC_encrypt(const unsigned char *in, unsigned char *out, const unsigned char iv[16],
 					 unsigned long length, const unsigned char *KS, int nr);
@@ -65,8 +29,6 @@ void AES_CTR_encrypt(const unsigned char *in, unsigned char *out,
 					 const unsigned char ivec[8], const unsigned char nonce[4],
 					 unsigned long length, const unsigned char *KS, int nr);
 /************************************************************************************/
-
-static AES_KEY key;
 
 void AES_encrypt_ecb(void *paddr, unsigned char *key_addr, uint8_t length);
 void AES_decrypt_ecb(void *paddr, unsigned char *key_addr, uint8_t length);
